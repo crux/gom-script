@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'gom/remote/connection'
 require 'gom/remote/entry'
 require 'gom/remote/subscription'
