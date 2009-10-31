@@ -4,21 +4,19 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{enttec-dmx-usb-pro-tools}
-  s.version = "0.0.0"
+  s.name = %q{gom-remote}
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["dirk luesebrink"]
+  s.authors = ["art+com/dirk luesebrink"]
   s.date = %q{2009-10-31}
   s.description = %q{ 
-      The ENTTEC DMX USB PRO is a cost efficient device to control DMX from the
-      convinience of your USB port. The __enttec-dmx-usb-pro-tools__ gem is a
-      collection of tools to control the device from the command line. It also
-      includes unix server script to hook up your dmx pro with a [GOM][1] (_not
-      yet released_) server model.
+      GOM is a schema-less object database in ruby with Resource Oriented API,
+      server-side javascript, HTTP callbacks and some more. This gom-remote
+      script simplifies coding of clients and daemon which like to listen on
+      state change event in the GOM.
     }
   s.email = %q{dirk.luesebrink@gmail.com}
-  s.executables = ["enttec-dmx-usb-write", "enttec-gom-daemon"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.markdown"
@@ -30,37 +28,27 @@ Gem::Specification.new do |s|
      "README.markdown",
      "Rakefile",
      "VERSION",
-     "bin/enttec-dmx-usb-write",
-     "bin/enttec-gom-daemon",
-     "doc/DMXUSBPro.pdf",
-     "enttec-dmx-usb-pro-tools.gemspec",
-     "lib/enttec-dmx-usb-pro-tools.rb",
-     "lib/enttec-dmx-usb-pro-tools/dmx_node.rb",
-     "lib/enttec-dmx-usb-pro-tools/rdmx.rb",
+     "gom-remote.gemspec",
      "lib/gom/remote.rb",
      "lib/gom/remote/callback_server.rb",
      "lib/gom/remote/connection.rb",
      "lib/gom/remote/daemon.rb",
      "lib/gom/remote/entry.rb",
      "lib/gom/remote/subscription.rb",
-     "spec/dmx_node_spec.rb",
-     "spec/dmx_spec.rb",
-     "spec/gom_remote_callback_server_spec.rb",
-     "spec/gom_remote_connection_spec.rb",
-     "spec/gom_remote_subscription_spec.rb",
+     "spec/gom/remote/callback_server.rb",
+     "spec/gom/remote/connection_spec.rb",
+     "spec/gom/remote/subscription_spec.rb",
      "spec/spec_helper.rb"
   ]
-  s.homepage = %q{http://github.com/crux/enttec-dmx-usb-pro-tools}
+  s.homepage = %q{http://github.com/crux/gom-remote}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.4}
-  s.summary = %q{shell & server tools for the ENTTEC DMX USB PRO device}
+  s.summary = %q{connecting scripts and daemons with a remote GOM instance}
   s.test_files = [
-    "spec/dmx_node_spec.rb",
-     "spec/dmx_spec.rb",
-     "spec/gom_remote_callback_server_spec.rb",
-     "spec/gom_remote_connection_spec.rb",
-     "spec/gom_remote_subscription_spec.rb",
+    "spec/gom/remote/callback_server.rb",
+     "spec/gom/remote/connection_spec.rb",
+     "spec/gom/remote/subscription_spec.rb",
      "spec/spec_helper.rb"
   ]
 
