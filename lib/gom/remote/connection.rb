@@ -123,7 +123,7 @@ module Gom
           o = { :Host => callback_ip, :Port => @options[:callback_port] }
           @callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
         end
-        @callback_server.start
+        @callback_server.start # {|*args| gnp_callback *args}
       end
 
       # incapsulates the underlying net access

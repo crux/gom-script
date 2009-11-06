@@ -4,7 +4,7 @@ describe Gom::Remote::CallbackServer do
 
   describe "initialization" do
     it "should not be running on creation" do
-      cs = Gom::Remote::CallbackServer.new {} 
+      cs = Gom::Remote::CallbackServer.new {}
       cs.running?.should == false
     end
 
@@ -15,7 +15,7 @@ describe Gom::Remote::CallbackServer do
 
   describe "with a server" do
     before :each do
-      @cs = Gom::Remote::CallbackServer.new {} 
+      @cs = Gom::Remote::CallbackServer.new {}
     end
 
     it "should start and stop" do

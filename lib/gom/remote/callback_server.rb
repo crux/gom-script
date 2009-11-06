@@ -1,4 +1,5 @@
 require 'rack'
+require 'rack/handler/mongrel'
 
 module Gom
   module Remote
@@ -14,24 +15,22 @@ module Gom
         @options[:Port]
       end
 
-      def initialize options = {}, &blk
-        block_given? or (raise "must supply a callback handler!")
+      def initialize options = {}, &handler
         @options = (Defaults.merge options)
-        @handler = blk
-        @dispatch = Proc.new {|env| dispatch env}
+        (@handler = handler) or (raise "no callback handler!")
       end
 
       def running?
         !@server.nil?
       end
 
-      def start &blk
+      def start &handler
         @server.nil? or (raise "already running!")
-        
         @thread = Thread.new do
           puts " -- starting callback server"
           begin
-            Rack::Handler::Mongrel.run(@dispatch, @options) do |server|
+            f = Proc.new {|env| dispatch env}
+            Rack::Handler::Mongrel.run(f, @options) do |server|
               puts "    mongrel up: #{server}"
               @server = server
             end
