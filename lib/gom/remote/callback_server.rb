@@ -58,6 +58,10 @@ module Gom
 
       private
 
+      # dispatching the request URI from env['REQUEST_URI'] which should look like: 
+      # 
+      #   http://172.20.2.9:2719/gnp;enttec-dmx;/services/enttec-dmx-usb-pro/values
+      #
       def dispatch env
         #puts("-" * 80)
         #puts env.inspect
@@ -66,13 +70,24 @@ module Gom
         #params = req.params
 
         #debugger if (defined? debugger)
-        _, name, entry_uri = env['REQUEST_URI'].split(/;/)
-        @handler.call(name, entry_uri, req)
-        [200, {"Content-Type"=>"text/plain"}, ["keep going dude!"]]
-
+        request_uri = env['REQUEST_URI']
+        op, name, entry_uri = request_uri.split(/;/)
+        case op[1..-1].to_sym
+        when :gnp
+          gnp_dispatcher req, name, entry_uri
+        when :nagios
+          [200, {"Content-Type"=>"text/plain"}, ["OK"]]
+        else
+          raise "unsupported callback op: '#{op}' -- #{request_uri}"
+        end
       rescue => e
         puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
         [500, {"Content-Type"=>"text/plain"}, [e]]
+      end
+
+      def gnp_dispatcher req, name, entry_uri
+        @handler.call(name, entry_uri, req)
+        [200, {"Content-Type"=>"text/plain"}, ["keep going dude!"]]
       end
     end
   end

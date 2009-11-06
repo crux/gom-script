@@ -42,6 +42,10 @@ module Gom
         throw e
       end
 
+      # update subscription observers. GNP callbacks will look like:
+      # 
+      #   http://<callback server>:<callback port>/gnp;<subscription name>;<subscription path>
+      #
       def refresh
         puts " -- refresh subscriptions(#{@subscriptions.size}):"
         @subscriptions.each do |sub| 
