@@ -1,10 +1,6 @@
-# ENTTEX DMX USB PRO Tools
+# GOM Remote
 
-The ENTTEC DMX USB PRO is a cost efficient device to control DMX from the
-convinience of your USB port. The __enttec-dmx-usb-pro-tools__ gem is a
-collection of tools to control the device from the command line. It also
-includes unix server script to hook up your dmx pro with a [GOM][1] (_not yet
-released_) server model.
+Easy access over the wire to a remote GOM node.
 
 ## Install
     
@@ -14,29 +10,7 @@ use the jewler tasks:
 
 ## Dependencies 
 
-For the debian system i did the last install the following packages and gems
-had to installed:
-
-    $ apt-get install git-core
-    $ apt-get install irb
-    $ apt-get install telnet
-    $ gem install irb
-    $ gem install mongrel
-    $ gem install nokogiri
-    $ gem install open-uri
-    $ gem install rack
-    $ gem install ruby-debug
-    $ gem install ruby-prof
-    $ gem install ruby-serialport
-
 ## credits
-
-The USB com code got lifted from [Ian Smith-Heisters' Rdmx package][2] which
-does includes much more DMX functionallity like animations and fixtures which
-i did't need.
-
-[1]: http://github.com/crux/gom
-[2]: http://github.com/heisters/rdmx/blob/master/lib/dmx.rb
 
 ## Note on Patches/Pull Requests
  

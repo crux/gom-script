@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["art+com/dirk luesebrink"]
-  s.date = %q{2009-10-31}
+  s.date = %q{2009-11-06}
   s.description = %q{ 
       GOM is a schema-less object database in ruby with Resource Oriented API,
       server-side javascript, HTTP callbacks and some more. This gom-remote
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
      "lib/gom/remote/daemon.rb",
      "lib/gom/remote/entry.rb",
      "lib/gom/remote/subscription.rb",
-     "spec/gom/remote/callback_server.rb",
+     "spec/gom/remote/callback_server_spec.rb",
      "spec/gom/remote/connection_spec.rb",
      "spec/gom/remote/subscription_spec.rb",
      "spec/spec_helper.rb"
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.4}
   s.summary = %q{connecting scripts and daemons with a remote GOM instance}
   s.test_files = [
-    "spec/gom/remote/callback_server.rb",
+    "spec/gom/remote/callback_server_spec.rb",
      "spec/gom/remote/connection_spec.rb",
      "spec/gom/remote/subscription_spec.rb",
      "spec/spec_helper.rb"
