@@ -27,7 +27,7 @@ module Gom
       def start &handler
         @server.nil? or (raise "already running!")
         @thread = Thread.new do
-          puts " -- starting callback server"
+          puts " -- starting callback server: #{@options.inspect}"
           begin
             f = Proc.new {|env| dispatch env}
             Rack::Handler::Mongrel.run(f, @options) do |server|
