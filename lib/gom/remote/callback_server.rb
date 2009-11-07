@@ -78,7 +78,8 @@ module Gom
         when :nagios
           [200, {"Content-Type"=>"text/plain"}, ["OK"]]
         else
-          raise "unsupported callback op: '#{op}' -- #{request_uri}"
+          puts "#{self}: unsupported callback op: '#{op}' -- #{request_uri}"
+          [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
         end
       rescue => e
         puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
