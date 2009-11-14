@@ -40,7 +40,7 @@ module Gom
       rescue OpenURI::HTTPError => e
         case code = e.to_s.to_i rescue 0
         when 404
-          throw NameError, "undefined: #{path}"
+          raise NameError, "undefined: #{path}"
         else
           puts " ## gom connection error: #{url} -- #{e}"
           throw e
