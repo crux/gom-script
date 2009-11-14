@@ -1,6 +1,9 @@
-# GOM Remote
+# GOM Script
 
-Easy access over the wire to a remote GOM node.
+Easy access over the wire to a remote GOM node. This gem includes a GNP
+callback server, support for automatic observer refreshments and command line
+tools for reading, writing and observing GOM entries.
+
 
 ## Install
     

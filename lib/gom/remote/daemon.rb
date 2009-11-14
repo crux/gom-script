@@ -9,7 +9,14 @@ module Gom
         :refresh_interval_dt => 60
       }
 
-      # dmx_node_url: http://<gom server>/<dmx node path>
+      # url: initial GOM url, path or attribute. The remote GOM server address
+      # gets extracted from this and, unless nil, the given block will be
+      # called with the remaining GOM path, aka:
+      #
+      #   url == http://gom:1234/foo/bar:attribute 
+      #
+      # will use 'http://gom:1234' as GOM server and call the block with
+      # '/foo/bar:attribute' as path argument.
       #
       def initialize url, options = {}, &blk
         @options = (Defaults.merge options)
@@ -27,6 +34,8 @@ module Gom
             tic && (tic.call self)
           rescue Exception => e
             puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
+          ensure
+            IO.fsync
           end
           sleep @options[:refresh_interval_dt]
         end

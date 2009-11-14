@@ -37,9 +37,14 @@ module Gom
         open(url).read
       rescue Timeout::Error => e
         raise "connection timeout: #{url}"
-      rescue => e
-        puts " ## read error: #{url} -- #{e}"
-        throw e
+      rescue OpenURI::HTTPError => e
+        case code = e.to_s.to_i rescue 0
+        when 404
+          throw NameError, "undefined: #{path}"
+        else
+          puts " ## gom connection error: #{url} -- #{e}"
+          throw e
+        end
       end
 
       # update subscription observers. GNP callbacks will look like:
