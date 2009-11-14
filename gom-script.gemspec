@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{gom-remote}
+  s.name = %q{gom-script}
   s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.date = %q{2009-11-14}
   s.description = %q{ 
       GOM is a schema-less object database in ruby with Resource Oriented API,
-      server-side javascript, HTTP callbacks and some more. This gom-remote
+      server-side javascript, HTTP callbacks and some more. This gom-script
       script simplifies coding of clients and daemon which like to listen on
       state change event in the GOM.
     }
@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
      "spec/gom/remote/subscription_spec.rb",
      "spec/spec_helper.rb"
   ]
-  s.homepage = %q{http://github.com/crux/gom-remote}
+  s.homepage = %q{http://github.com/crux/gom-script}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.4}
