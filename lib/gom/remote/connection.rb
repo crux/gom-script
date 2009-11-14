@@ -1,3 +1,4 @@
+require 'net/http'
 require 'open-uri'
 require 'json'
 
@@ -32,6 +33,25 @@ module Gom
         @subscriptions = []
       end
 
+      def write path, value
+        if value.kind_of? Hash 
+          write_node path, attributes
+        else
+          write_attribute path, value
+        end
+      end
+
+      def write_attribute path, value
+        txt, type = (Gom::Core::Primitive.encode value)
+        params = { "attribute" => txt, "type" => type }
+        url = "#{@base_url}#{path}"
+        http_put(url, params)
+      end
+      
+      def write_node path, attributes
+        raise "not yet implemented"
+      end
+
       def read path
         url = "#{@base_url}#{path}"
         open(url).read
@@ -45,6 +65,9 @@ module Gom
           puts " ## gom connection error: #{url} -- #{e}"
           throw e
         end
+      rescue => e
+        puts " ## read error: #{url} -- #{e}"
+        throw e
       end
 
       # update subscription observers. GNP callbacks will look like:

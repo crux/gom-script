@@ -10,6 +10,25 @@ describe Gom::Remote::Connection do
     end
   end
 
+  describe "with a connection it" do
+    before :each do
+      @gom, path = (Gom::Remote::Connection.init 'http://gom:345/dmx/node')
+    end
+
+    it "should fetch the callback_ip from remote" do
+      @gom.should_receive(:read).
+        with("/gom/config/connection.txt").
+        and_return('client_ip: 0.0.0.0')
+      @gom.callback_ip.should == "0.0.0.0"
+    end
+
+    it "should put attribute values to remote" do
+      @gom.should_receive(:http_put).
+        with("http://gom:345/some/node:attr", { "attribute" => "abc", "type" => :string })
+      @gom.write '/some/node:attr', "abc"
+    end
+  end
+
   describe "with subscriptions" do 
     before :each do
       @gom, path = (Gom::Remote::Connection.init 'http://localhost:3000')
@@ -74,19 +93,6 @@ describe Gom::Remote::Connection do
       )
       @gom.subscribe s
       @gom.refresh
-    end
-  end
-
-  describe "with a connection it" do
-    before :each do
-      @gom, path = (Gom::Remote::Connection.init 'http://gom:345/dmx/node')
-    end
-
-    it "should fetch the callback_ip from remote" do
-      @gom.should_receive(:read).
-        with("/gom/config/connection.txt").
-        and_return('client_ip: 0.0.0.0')
-      @gom.callback_ip.should == "0.0.0.0"
     end
   end
 end
