@@ -26,16 +26,16 @@ module Gom
       end
 
       def run &tic
-        puts " -- running gom enttec daemon loop..."
+        puts " -- running gom script daemon loop..."
         loop do
           begin
-            puts " -- tic --"
+            puts "#{Time.now} --"
             @gom.refresh
             tic && (tic.call self)
           rescue Exception => e
             puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
           ensure
-            IO.fsync
+            #IO.fsync
           end
           sleep @options[:refresh_interval_dt]
         end
