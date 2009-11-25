@@ -4,18 +4,23 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
+    # gem is a Gem::Specification... see
+    # http://www.rubygems.org/read/chapter/20 for additional settings
+    #
     gem.name = "gom-script"
     gem.summary = %Q{connecting scripts and daemons with a remote GOM instance}
     gem.description = %Q{ 
       GOM is a schema-less object database in ruby with Resource Oriented API,
-      server-side javascript, HTTP callbacks and some more. This gom-script
-      script simplifies coding of clients and daemon which like to listen on
-      state change event in the GOM.
+      server-side javascript, distributed HTTP notifications and some more.
+      This gom-script script simplifies coding of clients and daemon which like
+      to listen on state change event in the GOM.
     }.gsub /\n\n/, ''
     gem.email = "dirk.luesebrink@gmail.com"
     gem.homepage = "http://github.com/crux/gom-script"
     gem.authors = ["art+com/dirk luesebrink"]
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_runtime_dependency "applix", ">=0.2.1"
+    gem.add_runtime_dependency "rack"
+    gem.add_development_dependency "rspec"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
