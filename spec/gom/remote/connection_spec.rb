@@ -3,6 +3,24 @@ require File.dirname(__FILE__)+'/../../spec_helper'
 describe Gom::Remote::Connection do
 
   describe "initialization" do
+    it "should split a GOM node url" do
+      gom, path = (Gom::Remote::Connection.split_url 'http://gom:345/dmx/node')
+      gom.should == 'http://gom:345'
+      path.should == '/dmx/node'
+    end
+    it "should strip last slash from the node" do
+      gom, path = (Gom::Remote::Connection.split_url 'http://xxx:4321/a/b/c/')
+      gom.should == 'http://xxx:4321'
+      path.should == '/a/b/c'
+      gom, path = (Gom::Remote::Connection.split_url 'http://xxx:4321/a/b:c/')
+      gom.should == 'http://xxx:4321'
+      path.should == '/a/b:c'
+    end
+    it "should split an attribute URL" do
+      gom, path = (Gom::Remote::Connection.split_url 'http://xxx/a:x')
+      gom.should == 'http://xxx'
+      path.should == '/a:x'
+    end
     it "should split a GOM node url on init" do
       gom, path = (Gom::Remote::Connection.init 'http://gom:345/dmx/node')
       gom.base_url.should == 'http://gom:345'

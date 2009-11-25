@@ -20,8 +20,9 @@ module Gom
       #
       def initialize url, options = {}, &blk
         @options = (Defaults.merge options)
-        @gom, path = (Gom::Remote::Connection.init url)
-        #@dmx = DmxNode.new dmx_node_path, @options
+        #@gom, path = (Gom::Remote::Connection.new url, @options)
+        server, path = (Gom::Remote::Connection.split_url url)
+        @gom = (Gom::Remote::Connection.new server, @options)
         (blk.call path) unless blk.nil?
       end
 

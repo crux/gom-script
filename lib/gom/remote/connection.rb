@@ -15,22 +15,33 @@ module Gom
         :callback_port => 2719
       }
 
+      # @deprecated 
+      # use split_url & new
+      def self.init url, options = {}
+        server, path = (Connection.split_url url)
+        connection= (self.new server, options)
+        [connection, path]
+      end
+
       # take apart the URL into GOM and node path part
-      def self.init url
+      def self.split_url url
         u = URI.parse url
         re = %r|#{u.scheme}://#{u.host}(:#{u.port})?|
-        gom_url = (re.match url).to_s
-        path = (url.sub gom_url, '')
-
-        [(self.new gom_url), path]
+        server = (re.match url).to_s
+        path = (url.sub server, '').sub(/\/$/, '')
+        [server, path]
       end
 
       def initialize base_url, options = {}
         @options = (Defaults.merge options)
         @base_url = base_url
+        #Gom::Remote.connection and (raise "connection already open")
         Gom::Remote.connection = self
 
         @subscriptions = []
+
+        #o = { :Host => callback_ip, :Port => @options[:callback_port] }
+        #@callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
       end
 
       def write path, value
@@ -42,6 +53,8 @@ module Gom
       end
 
       def write_attribute path, value
+        # TODO: Primitive#encode returns to_s for all unknow types. exception
+        # would be correct.
         txt, type = (Gom::Core::Primitive.encode value)
         params = { "attribute" => txt, "type" => type }
         url = "#{@base_url}#{path}"
@@ -103,7 +116,7 @@ module Gom
       end
 
       def callback_ip
-        debugger if (defined? debugger)
+        #debugger if (defined? debugger)
         txt = (read "/gom/config/connection.txt")
         unless m = (txt.match /^client_ip:\s*(\d+\.\d+\.\d+\.\d+)/) 
           raise "/gom/config/connection: No Client IP? '#{txt}'"
@@ -147,7 +160,7 @@ module Gom
       end
 
       def callback_server_base
-        @callback_server_base = "http://#{callback_server.host}:#{callback_server.port}"
+        "http://#{callback_server.host}:#{callback_server.port}"
       end
 
       def start_callback_server

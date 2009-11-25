@@ -18,10 +18,11 @@ describe Gom::Remote::CallbackServer do
       @cs = Gom::Remote::CallbackServer.new {}
     end
 
-    #it "should dispatch a nagios callback" do
-    #  @cs.should_receive(:gnp_dispatcher)
-    #  @cs.send(:dispatch, { 'REQUEST_URI' => "/nagios;foo;bar" })
-    #end
+    it "should dispatch a nagios callback" do
+      @cs.should_not_receive(:gnp_dispatcher)
+      response = @cs.send(:dispatch_request_uri, "/nagios;foo;bar", {}) 
+      response.should == [200, {"Content-Type"=>"text/plain"}, ["OK"]]
+    end
 
     it "should start and stop" do
       @cs.start.should == @cs

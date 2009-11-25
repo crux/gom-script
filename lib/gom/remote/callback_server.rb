@@ -58,7 +58,8 @@ module Gom
 
       private
 
-      # dispatching the request URI from env['REQUEST_URI'] which should look like: 
+      # dispatching a request URI from env['REQUEST_URI'] which look
+      # somethings like: 
       # 
       #   http://172.20.2.9:2719/gnp;enttec-dmx;/services/enttec-dmx-usb-pro/values
       #
@@ -66,15 +67,18 @@ module Gom
         #puts("-" * 80)
         #puts env.inspect
         #puts("-" * 80)
-        req = Rack::Request.new(env)
+        #req = Rack::Request.new(env)
         #params = req.params
-
-        #debugger if (defined? debugger)
         request_uri = env['REQUEST_URI']
-        op, name, entry_uri = request_uri.split(/;/)
+        dispatch_request_uri request_uri, env
+      end
+
+      def dispatch_request_uri request_uri, env
+        #debugger if (defined? debugger)
+        op, name, entry_uri = (request_uri.split /;/)
         case op[1..-1].to_sym
         when :gnp
-          gnp_dispatcher req, name, entry_uri
+          gnp_dispatcher name, entry_uri, Rack::Request.new(env)
         when :nagios
           [200, {"Content-Type"=>"text/plain"}, ["OK"]]
         else
@@ -86,7 +90,7 @@ module Gom
         [500, {"Content-Type"=>"text/plain"}, [e]]
       end
 
-      def gnp_dispatcher req, name, entry_uri
+      def gnp_dispatcher name, entry_uri, req
         @handler.call(name, entry_uri, req)
         [200, {"Content-Type"=>"text/plain"}, ["keep going dude!"]]
       end
