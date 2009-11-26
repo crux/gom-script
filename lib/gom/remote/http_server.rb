@@ -84,19 +84,7 @@ module Gom
       #   http://172.20.2.9:2719/gnp;enttec-dmx;/services/enttec-dmx-usb-pro/values
       #
       def dispatch env
-        #puts("-" * 80)
-        #puts env.inspect
-        #puts("-" * 80)
         req = Rack::Request.new(env)
-        #params = req.params
-        #debugger if(defined? debugger)
-
-        #body = ["#{(env.map { |k,v| "#{k}: #{v}" }.join "\n")}"]
-        #body.push "\n"
-        #body.push "request url: #{req.url}\n"
-        #body.push "request fullpath: #{req.fullpath}\n"
-        #return [200, {"Content-Type"=>"text/plain"}, body]
-
         uri = (URI.parse req.fullpath)
         if func = (match uri)
           func.call uri, env
@@ -104,25 +92,12 @@ module Gom
           puts " !! no handler for: #{uri}"
           [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
         end
-=begin
-        request_uri = env['REQUEST_URI']
-        op, name, entry_uri = (request_uri.split /;/)
-        case op[1..-1].to_sym
-        when :gnp
-          gnp_dispatcher name, entry_uri, Rack::Request.new(env)
-        when :nagios
-          [200, {"Content-Type"=>"text/plain"}, ["OK"]]
-        else
-          puts "#{self}: unsupported callback op: '#{op}' -- #{request_uri}"
-          [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
-        end
-=end
       rescue => e
         puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
         [500, {"Content-Type"=>"text/plain"}, [e]]
       end
 
-      # as i absolutly displike capitalized options i use lowercase options
+      # as i absolutly dislike capitalized options i use lowercase options
       # throughout and only convert them just before i pass them the the
       # mongrel server. Nothing to be proud of, but i definitly don't want to
       # write --Port on the command line...
