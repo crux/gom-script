@@ -9,17 +9,12 @@ module Gom
 
     class Connection
 
-      attr_reader :base_url
+      attr_reader :base_url, :gnp_port
 
-      Defaults = {
-        :callback_port => 2719
-      }
-
-      # @deprecated 
       # use split_url & new
-      def self.init url, options = {}
+      def self.init url, gnp_port = 2179
         server, path = (Connection.split_url url)
-        connection= (self.new server, options)
+        connection = (self.new server, gnp_port)
         [connection, path]
       end
 
@@ -32,9 +27,9 @@ module Gom
         [server, path]
       end
 
-      def initialize base_url, options = {}
-        @options = (Defaults.merge options)
+      def initialize base_url, gnp_port = 2179
         @base_url = base_url
+        @gnp_port = gnp_port
         #Gom::Remote.connection and (raise "connection already open")
         Gom::Remote.connection = self
 
@@ -113,7 +108,7 @@ module Gom
         #@callback_server or (raise 'no callback server running!')
         #@callback_server ||= start_callback_server
         @callback_server ||= begin
-          o = { :host => callback_ip, :port => @options[:callback_port] }
+          o = { :host => callback_ip, :port => @gnp_port }
           hs = HttpServer.new o 
           hs.mount "^/gnp;", lambda {|*args| gnp_handler *args}
           hs
@@ -178,7 +173,7 @@ module Gom
 
       #def start_callback_server
       #  unless @callback_server
-      #    o = { :Host => callback_ip, :Port => @options[:callback_port] }
+      #    o = { :Host => callback_ip, :Port => @options[:gnp_port] }
       #    @callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
       #  end
       #  @callback_server.start # {|*args| gnp_callback *args}
