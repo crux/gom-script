@@ -10,13 +10,26 @@ describe Gom::Remote::HttpServer do
   end
 
   it "should overwrite host option" do
-    @server = Gom::Remote::HttpServer.new :host => "1.2.3.4"
-    @server.host.should == "1.2.3.4"
+    server = Gom::Remote::HttpServer.new :host => "1.2.3.4"
+    server.host.should == "1.2.3.4"
   end
 
   it "should overwrite port option" do
-    @server = Gom::Remote::HttpServer.new :port => 9151
-    @server.port.should == 9151
+    server = Gom::Remote::HttpServer.new :port => 9151
+    server.port.should == 9151
+  end
+
+  it "should have a base url" do
+    h, p = (Gom::Remote::HttpServer::Defaults.values_at :host, :port)
+
+    server = Gom::Remote::HttpServer.new
+    server.base_url.should == "http://#{h}:#{p}"
+    server = Gom::Remote::HttpServer.new :port => 9151
+    server.base_url.should == "http://#{h}:9151"
+    server = Gom::Remote::HttpServer.new :host => '127.0.0.1'
+    server.base_url.should == "http://127.0.0.1:#{p}"
+    server = Gom::Remote::HttpServer.new :port => 1234, :host => '10.1.1.10'
+    server.base_url.should == "http://10.1.1.10:1234"
   end
 
   describe "with a server" do

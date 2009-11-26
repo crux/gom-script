@@ -20,6 +20,11 @@ module Gom
         @mounts_access = Mutex.new
       end
 
+      def base_url
+        p = (port == 80 ? '' : ":#{port}")
+        "http://#{host}#{p}"
+      end
+
       def running?
         !@server.nil?
       end
