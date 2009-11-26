@@ -53,6 +53,9 @@ module Gom
         self
       end
 
+      # take the URI on walk through the list of mounts and return the one with
+      # the longest match or nil. In case of a match a tuple of [func,
+      # match_pattern] is returned
       def match uri
         targets = []
         @mounts_access.synchronize do
@@ -60,8 +63,16 @@ module Gom
             [app, (uri.path.match re).to_s]
           end
         end
-        targets.sort! { |a,b| a[1].length <=> b[1].length }
-        targets.last
+
+        # sort for longest match. And target might be nil already for an empty
+        # targets list, which is ok as we return nil in that case.
+        target = targets.sort!{|a,b| a[1].length <=> b[1].length}.last
+        func, pattern = target
+        if pattern.nil? || pattern.empty?
+          nil
+        else
+          [func, pattern]
+        end
       end
 
       private
@@ -77,14 +88,23 @@ module Gom
         #puts("-" * 80)
         req = Rack::Request.new(env)
         #params = req.params
-        debugger if(defined? debugger)
-        body = ["#{(env.map { |k,v| "#{k}: #{v}" }.join "\n")}"]
-        body.push "\n"
-        body.push "request url: #{req.url}\n"
-        body.push "request fullpath: #{req.fullpath}\n"
-        uri = (URI.parse req.fullpath)
-        return [200, {"Content-Type"=>"text/plain"}, body]
+        #debugger if(defined? debugger)
 
+        #body = ["#{(env.map { |k,v| "#{k}: #{v}" }.join "\n")}"]
+        #body.push "\n"
+        #body.push "request url: #{req.url}\n"
+        #body.push "request fullpath: #{req.fullpath}\n"
+        #return [200, {"Content-Type"=>"text/plain"}, body]
+
+        uri = (URI.parse req.fullpath)
+        func, pattern = (match uri)
+        if pattern.empty?
+          puts " !! no handler for: #{uri}"
+          [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
+        else
+          func.call uri, env
+        end
+=begin
         request_uri = env['REQUEST_URI']
         op, name, entry_uri = (request_uri.split /;/)
         case op[1..-1].to_sym
@@ -96,6 +116,7 @@ module Gom
           puts "#{self}: unsupported callback op: '#{op}' -- #{request_uri}"
           [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
         end
+=end
       rescue => e
         puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
         [500, {"Content-Type"=>"text/plain"}, [e]]

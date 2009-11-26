@@ -28,11 +28,31 @@ describe Gom::Remote::HttpServer do
       @server.send(:match, (URI.parse '/foo/aa;bb;cc?p1=12&p2=oo')).should == nil
     end
 
+    it "should not missmatch" do
+      @server.mount '^/a',     lambda { }
+      @server.mount '^/a/b',   lambda { }
+      @server.mount '^/a/b/c', lambda { }
+      @server.match(URI.parse '/x/a/b/c').should == nil
+      @server.match(URI.parse '/x/a/b').should == nil
+      @server.match(URI.parse '/x/a').should == nil
+      @server.match(URI.parse 'a').should == nil
+    end
+
     it "should unmount" do
       @server.mount '/a/b/c', (l = lambda { "block 6" })
       @server.match(URI.parse '/a/b/c/d').should == [l, '/a/b/c']
       @server.unmount '/a/b/c'
       @server.match(URI.parse '/a/b/c/d').should == nil
+    end
+
+    it "should match with regexp as well" do
+      @server.mount %r{/a},     (l1 = lambda { "block 1" })
+      @server.mount %r{/a/b},   (l2 = lambda { "block 2" })
+      @server.mount %r{/a/b/c}, (l3 = lambda { "block 3" })
+      @server.match(URI.parse '/a/b').should == [l2, '/a/b']
+      @server.match(URI.parse '/a/b/c').should == [l3, '/a/b/c']
+      @server.match(URI.parse '/a/b/x').should == [l2, '/a/b']
+      @server.match(URI.parse '/a/b/c/d').should == [l3, '/a/b/c']
     end
 
     it "should prefer longer matches" do
