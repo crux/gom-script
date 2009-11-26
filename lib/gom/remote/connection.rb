@@ -39,9 +39,6 @@ module Gom
         Gom::Remote.connection = self
 
         @subscriptions = []
-
-        #o = { :Host => callback_ip, :Port => @options[:callback_port] }
-        #@callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
       end
 
       def write path, value
@@ -89,12 +86,14 @@ module Gom
       #
       def refresh
         puts " -- refresh subscriptions(#{@subscriptions.size}):"
+
+        callback_server.start unless callback_server.running? 
         @subscriptions.each do |sub| 
           puts "     - #{sub.name}"
           params = { "attributes[accept]" => 'application/json' }
 
           query = "/gnp;#{sub.name};#{sub.entry_uri}"
-          params["attributes[callback_url]"] = "#{callback_server_base}#{query}"
+          params["attributes[callback_url]"] = "#{callback_server.base_url}#{query}"
 
           [:operations, :uri_regexp, :condition_script].each do |key|
             (v = sub.send key) and params["attributes[#{key}]"] = v
@@ -112,7 +111,13 @@ module Gom
 
       def callback_server
         #@callback_server or (raise 'no callback server running!')
-        @callback_server ||= start_callback_server
+        #@callback_server ||= start_callback_server
+        @callback_server ||= begin
+          o = { :host => callback_ip, :port => @options[:callback_port] }
+          hs = HttpServer.new o 
+          hs.mount "^/gnp;", lambda {|*args| gnp_handler *args}
+          hs
+        end
       end
 
       def callback_ip
@@ -126,17 +131,24 @@ module Gom
 
       private
 
-      def gnp_callback name, entry_uri, req
+      #def gnp_callback name, entry_uri, req
+      def gnp_handler request_uri, env
+        op, name, entry_uri = (request_uri.to_s.split /;/)
         unless sub = @subscriptions.find { |s| s.name == name }
           raise "no such subscription: #{name} :: #{entry_uri}"#\n#{@subscriptions.inspect}"
         end
-        op, payload = (decode_gnp_body req.body.read)
+
         begin
+          req = Rack::Request.new(env)
+          op, payload = (decode_gnp_body req.body.read)
           (sub.callback.call op, payload)
         rescue => e
           callstack = "#{e.backtrace.join "\n    "}"
           puts " ## Subscription::callback - #{e}\n -> #{callstack}"
         end 
+
+        # HTTP OK keeps the subscription alive, even in case of handler errors
+        [200, {"Content-Type"=>"text/plain"}, ["keep going dude!"]]
       end
 
       def decode_gnp_body txt
@@ -159,17 +171,18 @@ module Gom
         #[op, (payload['attribute'] || payload['node'])]
       end
 
-      def callback_server_base
-        "http://#{callback_server.host}:#{callback_server.port}"
-      end
+      #def callback_server_base
+      #  callback_server.base_url
+      #  #"http://#{callback_server.host}:#{callback_server.port}"
+      #end
 
-      def start_callback_server
-        unless @callback_server
-          o = { :Host => callback_ip, :Port => @options[:callback_port] }
-          @callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
-        end
-        @callback_server.start # {|*args| gnp_callback *args}
-      end
+      #def start_callback_server
+      #  unless @callback_server
+      #    o = { :Host => callback_ip, :Port => @options[:callback_port] }
+      #    @callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
+      #  end
+      #  @callback_server.start # {|*args| gnp_callback *args}
+      #end
 
       # incapsulates the underlying net access
       def http_put(url, params, &request_modifier)

@@ -84,12 +84,12 @@ module Gom
       #   http://172.20.2.9:2719/gnp;enttec-dmx;/services/enttec-dmx-usb-pro/values
       #
       def dispatch env
-        req = Rack::Request.new(env)
-        uri = (URI.parse req.fullpath)
+        #req = Rack::Request.new(env)
+        uri = (URI.parse env['REQUEST_URI'])
         if func = (match uri)
           func.call uri, env
         else
-          puts " !! no handler for: #{uri}"
+          puts " !! no handler for: #{req.fullpath} -- #{@mounts.keys.inspect}"
           [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
         end
       rescue => e
@@ -111,7 +111,7 @@ module Gom
         f = Proc.new {|env| dispatch env}
         Rack::Handler::Mongrel.run(f, mongrel_opts) do |server|
           @server = server
-          puts "    mongrel up: #{server.inspect}"
+          puts "    mongrel up: #{@options.inspect}"
         end
       rescue Exception => e
         puts " ## oops: #{e}"
