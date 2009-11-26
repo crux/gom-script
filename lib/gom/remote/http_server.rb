@@ -53,9 +53,9 @@ module Gom
         self
       end
 
-      # take the URI on walk through the list of mounts and return the one with
-      # the longest match or nil. In case of a match a tuple of [func,
-      # match_pattern] is returned
+      # take the URI on walk it through the list of mounts and return the one
+      # with the longest match or nil. In case of a match the corresponding
+      # handler is returned, nil otherwise.
       def match uri
         targets = []
         @mounts_access.synchronize do
@@ -68,11 +68,7 @@ module Gom
         # targets list, which is ok as we return nil in that case.
         target = targets.sort!{|a,b| a[1].length <=> b[1].length}.last
         func, pattern = target
-        if pattern.nil? || pattern.empty?
-          nil
-        else
-          [func, pattern]
-        end
+        (pattern.nil? || pattern.empty?) ? nil : func
       end
 
       private
@@ -97,12 +93,11 @@ module Gom
         #return [200, {"Content-Type"=>"text/plain"}, body]
 
         uri = (URI.parse req.fullpath)
-        func, pattern = (match uri)
-        if pattern.empty?
+        if func = (match uri)
+          func.call uri, env
+        else
           puts " !! no handler for: #{uri}"
           [404, {"Content-Type"=>"text/plain"}, ["Not Found"]]
-        else
-          func.call uri, env
         end
 =begin
         request_uri = env['REQUEST_URI']

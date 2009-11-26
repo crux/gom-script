@@ -40,7 +40,7 @@ describe Gom::Remote::HttpServer do
 
     it "should unmount" do
       @server.mount '/a/b/c', (l = lambda { "block 6" })
-      @server.match(URI.parse '/a/b/c/d').should == [l, '/a/b/c']
+      @server.match(URI.parse '/a/b/c/d').should == l
       @server.unmount '/a/b/c'
       @server.match(URI.parse '/a/b/c/d').should == nil
     end
@@ -49,25 +49,25 @@ describe Gom::Remote::HttpServer do
       @server.mount %r{/a},     (l1 = lambda { "block 1" })
       @server.mount %r{/a/b},   (l2 = lambda { "block 2" })
       @server.mount %r{/a/b/c}, (l3 = lambda { "block 3" })
-      @server.match(URI.parse '/a/b').should == [l2, '/a/b']
-      @server.match(URI.parse '/a/b/c').should == [l3, '/a/b/c']
-      @server.match(URI.parse '/a/b/x').should == [l2, '/a/b']
-      @server.match(URI.parse '/a/b/c/d').should == [l3, '/a/b/c']
+      @server.match(URI.parse '/a/b').should == l2
+      @server.match(URI.parse '/a/b/c').should == l3
+      @server.match(URI.parse '/a/b/x').should == l2
+      @server.match(URI.parse '/a/b/c/d').should == l3
     end
 
     it "should prefer longer matches" do
       @server.mount '/a',     (l1 = lambda { "block 1" })
       @server.mount '/a/b',   (l2 = lambda { "block 2" })
       @server.mount '/a/b/c', (l3 = lambda { "block 3" })
-      @server.match(URI.parse '/a/b').should == [l2, '/a/b']
-      @server.match(URI.parse '/a/b/c').should == [l3, '/a/b/c']
-      @server.match(URI.parse '/a/b/x').should == [l2, '/a/b']
-      @server.match(URI.parse '/a/b/c/d').should == [l3, '/a/b/c']
+      @server.match(URI.parse '/a/b').should == l2
+      @server.match(URI.parse '/a/b/c').should == l3
+      @server.match(URI.parse '/a/b/x').should == l2
+      @server.match(URI.parse '/a/b/c/d').should == l3
     end
 
     it "should match simple strings" do
       @server.mount "/foo", (l = lambda { puts "needs some code here" })
-      @server.match(URI.parse '/foo/aa;bb;cc?p1=12&p2=oo').first.should == l
+      @server.match(URI.parse '/foo/aa;bb;cc?p1=12&p2=oo').should == l
     end
 
     it "should have default mongrel options" do
