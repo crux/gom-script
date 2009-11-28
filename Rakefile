@@ -20,7 +20,9 @@ begin
     gem.authors = ["art+com/dirk luesebrink"]
     gem.add_runtime_dependency "applix", ">=0.2.1"
     gem.add_runtime_dependency "rack"
+
     gem.add_development_dependency "rspec"
+    gem.add_development_dependency "fakeweb", ">=1.2.7"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
