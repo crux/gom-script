@@ -9,31 +9,40 @@ module Gom
 
     class Connection
 
-      attr_reader :base_url, :gnp_port
+      attr_reader :target_url, :initial_path, :callback_server
 
-      # use split_url & new
-      def self.init url, gnp_port = 2179
-        server, path = (Connection.split_url url)
-        connection = (self.new server, gnp_port)
-        [connection, path]
+      class << self
+        # take apart the URL into GOM and node path part
+        def split_url url
+          u = URI.parse url
+          re = %r|#{u.scheme}://#{u.host}(:#{u.port})?|
+            server = (re.match url).to_s
+          path = (url.sub server, '').sub(/\/$/, '')
+          [server, path]
+        end
+
+        def init url, callback_port = nil
+          connection = (self.new url, callback_port)
+          [connection, connection.initial_path]
+        end
       end
 
-      # take apart the URL into GOM and node path part
-      def self.split_url url
-        u = URI.parse url
-        re = %r|#{u.scheme}://#{u.host}(:#{u.port})?|
-        server = (re.match url).to_s
-        path = (url.sub server, '').sub(/\/$/, '')
-        [server, path]
-      end
-
-      def initialize base_url, gnp_port = 2179
-        @base_url = base_url
-        @gnp_port = gnp_port
+      # url: initial GOM url, path or attribute. The remote GOM server
+      # address gets extracted from this and, unless nil, the given block
+      # will be called with the remaining GOM path, aka:
+      #
+      #   url == http://gom:1234/foo/bar:attribute 
+      #
+      # will use 'http://gom:1234' as GOM server and call the block with
+      # '/foo/bar:attribute' as path argument.
+      #
+      def initialize url, callback_port = nil
+        @target_url, @initial_path = (Connection.split_url url)
         #Gom::Remote.connection and (raise "connection already open")
         Gom::Remote.connection = self
 
         @subscriptions = []
+        @callback_server = init_callback_server callback_port
       end
 
       def write path, value
@@ -49,7 +58,7 @@ module Gom
         # would be correct.
         txt, type = (Gom::Core::Primitive.encode value)
         params = { "attribute" => txt, "type" => type }
-        url = "#{@base_url}#{path}"
+        url = "#{@target_url}#{path}"
         http_put(url, params)
       end
       
@@ -58,7 +67,7 @@ module Gom
       end
 
       def read path
-        url = "#{@base_url}#{path}"
+        url = "#{@target_url}#{path}"
         open(url).read
       rescue Timeout::Error => e
         raise "connection timeout: #{url}"
@@ -82,7 +91,8 @@ module Gom
       def refresh
         puts " -- refresh subscriptions(#{@subscriptions.size}):"
 
-        callback_server.start unless callback_server.running? 
+        run_callback_server # call it once to make sure it runs
+        
         @subscriptions.each do |sub| 
           puts "     - #{sub.name}"
           params = { "attributes[accept]" => 'application/json' }
@@ -94,7 +104,7 @@ module Gom
             (v = sub.send key) and params["attributes[#{key}]"] = v
           end
 
-          url = "#{@base_url}#{sub.uri}"
+          url = "#{@target_url}#{sub.uri}"
           http_put(url, params) # {|req| req.content_type = 'application/json'}
         end
       end
@@ -104,27 +114,25 @@ module Gom
         @subscriptions.push sub
       end
 
-      def callback_server
-        #@callback_server or (raise 'no callback server running!')
-        #@callback_server ||= start_callback_server
-        @callback_server ||= begin
-          o = { :host => callback_ip, :port => @gnp_port }
-          hs = HttpServer.new o 
-          hs.mount "^/gnp;", lambda {|*args| gnp_handler *args}
-          hs
-        end
-      end
+      private
 
-      def callback_ip
-        #debugger if (defined? debugger)
+      def init_callback_server port
         txt = (read "/gom/config/connection.txt")
         unless m = (txt.match /^client_ip:\s*(\d+\.\d+\.\d+\.\d+)/) 
           raise "/gom/config/connection: No Client IP? '#{txt}'"
         end
-        @callback_ip = m[1]
+        # this is the IP by which i am seen from the GOM 
+        ip = m[1]
+
+        http = (HttpServer.new :host => ip, :port => port)
+        http.mount "^/gnp;", lambda {|*args| gnp_handler *args}
+
+        http
       end
 
-      private
+      def run_callback_server
+        callback_server.start unless callback_server.running? 
+      end
 
       #def gnp_callback name, entry_uri, req
       def gnp_handler request_uri, env
@@ -165,19 +173,6 @@ module Gom
         #payload = json[op.to_s]
         #[op, (payload['attribute'] || payload['node'])]
       end
-
-      #def callback_server_base
-      #  callback_server.base_url
-      #  #"http://#{callback_server.host}:#{callback_server.port}"
-      #end
-
-      #def start_callback_server
-      #  unless @callback_server
-      #    o = { :Host => callback_ip, :Port => @options[:gnp_port] }
-      #    @callback_server = CallbackServer.new(o) {|*args| gnp_callback *args}
-      #  end
-      #  @callback_server.start # {|*args| gnp_callback *args}
-      #end
 
       # incapsulates the underlying net access
       def http_put(url, params, &request_modifier)

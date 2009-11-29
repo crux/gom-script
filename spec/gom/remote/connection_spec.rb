@@ -23,7 +23,7 @@ describe Gom::Remote::Connection do
     end
     it "should split a GOM node url on init" do
       gom, path = (Gom::Remote::Connection.init 'http://gom:345/dmx/node')
-      gom.base_url.should == 'http://gom:345'
+      gom.target_url.should == 'http://gom:345'
       path.should == '/dmx/node'
     end
   end
@@ -34,10 +34,7 @@ describe Gom::Remote::Connection do
     end
 
     it "should fetch the callback_ip from remote" do
-      @gom.should_receive(:read).
-        with("/gom/config/connection.txt").
-        and_return('client_ip: 0.0.0.0')
-      @gom.callback_ip.should == "0.0.0.0"
+      @gom.callback_server.host.should == "10.0.0.23"
     end
 
     it "should put attribute values to remote" do
@@ -50,15 +47,7 @@ describe Gom::Remote::Connection do
   describe "with subscriptions" do 
     before :each do
       @gom, path = (Gom::Remote::Connection.init 'http://localhost:3000')
-      @gom.stub!(:callback_ip).and_return("1.2.3.4")
-
-      #@cs = Object.new
-      #Gom::Remote::CallbackServer.stub!(:new).and_return(@cs)
-      #@cs.stub!(:start).and_return(@cs)
-      #@cs.stub!(:host).and_return("1.2.3.4")
-      #@cs.stub!(:port).and_return(2179)
-
-      @gom.callback_server.stub!(:running?).and_return(true)
+      @gom.stub!(:run_callback_server).and_return(true)
     end
 
     #it "should have no subscriptions on init" do
