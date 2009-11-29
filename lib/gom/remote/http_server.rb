@@ -31,10 +31,12 @@ module Gom
 
       def mount pattern, handler
         @mounts_access.synchronize { @mounts.update pattern => handler }
+        self
       end
 
       def unmount pattern
         @mounts_access.synchronize { @mounts.delete pattern }
+        self
       end
 
       def start
