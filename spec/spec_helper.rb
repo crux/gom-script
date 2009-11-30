@@ -35,6 +35,10 @@ Spec::Runner.configure do |config|
       :get, "http://gom:345/gom/config/connection.txt", 
       :body => "client_ip: 10.0.0.23"
     )
+    FakeWeb.register_uri(
+      :get, "http://localhost:3000/gom/config/connection.txt", 
+      :body => "client_ip: 10.0.0.23"
+    )
 
     Gom::Remote.connection = nil # reset for every test
   end
