@@ -6,9 +6,13 @@ module Gom
       include ::Timeout
 
       Defaults = { 
-        :refresh_interval_dt => 60,
-        :callback_port       => 8815,
+        :actor_dt       => 60,
+        :sensor_dt      => 1,
+        :callback_port  => 8815,
       }
+
+      include OAttr
+      oattr :actor_dt, :sensor_dt
 
       def initialize service_url, options = {}, &blk
         @options = (Defaults.merge options)
@@ -32,20 +36,31 @@ module Gom
           hs = HttpServer.new o 
           hs.mount "^/gnp;", lambda {|*args| gnp_handler *args}
 =end
+      def sensor_loop interval = sensor_dt, &tic
+        puts " -- running gom-script sensor loop.."
+        forever(interval) { tic.call self }
+      end
 
-      def run &tic
-        puts " -- running gom script daemon loop..."
+      def actor_loop interval = actor_dt, &tic
+        puts " -- running gom-script actor loop.."
+        forever(interval) do 
+          @gom.refresh
+          tic && (tic.call self) || :continue
+        end
+      end
+
+      private
+
+      def forever interval, &callback 
         loop do
           begin
-            puts "#{Time.now} --"
-            @gom.refresh
-            tic && (tic.call self)
+            rc = callback.call
           rescue Exception => e
-            puts " ## #{e}\n -> #{e.backtrace.join "\n    "}"
+            puts " ## #{self} - #{e}\n -> #{e.backtrace.join "\n    "}"
           ensure
-            #IO.fsync
+            break if rc == :stop
+            sleep interval
           end
-          sleep @options[:refresh_interval_dt]
         end
       end
     end
