@@ -145,7 +145,7 @@ module Gom
           req = Rack::Request.new(env)
           op, payload = (decode_gnp_body req.body.read)
           (sub.callback.call op, payload)
-        rescue => e
+        rescue Exception => e
           callstack = "#{e.backtrace.join "\n    "}"
           puts " ## Subscription::callback - #{e}\n -> #{callstack}"
         end 
