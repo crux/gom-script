@@ -8,6 +8,9 @@ describe Gom::Remote::Daemon do
     before :each do
       @daemon = Daemon.new 'http://gom:345/gom-script/test'
     end
+    it "should parse the service_path from the service_url" do
+      @daemon.service_path.should == '/gom-script/test'
+    end
     it "should terminate sensor loop on :stop" do
       count = 0
       timeout(1) do

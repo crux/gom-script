@@ -14,13 +14,16 @@ module Gom
       include OAttr
       oattr :actor_dt, :sensor_dt
 
+      # service_path is derived from the service_url (server part stripped)
+      attr :service_path
+
       def initialize service_url, options = {}, &blk
         @options = (Defaults.merge options)
 
         callback_port = @options[:callback_port]
-        @gom, path = (Connection.init service_url, callback_port)
+        @gom, @service_path = (Connection.init service_url, callback_port)
 
-        (blk.call self, path) unless blk.nil?
+        (blk.call self, @service_path) unless blk.nil?
       end
 
 =begin
@@ -49,9 +52,7 @@ module Gom
         end
       end
 
-      private
-
-      def forever interval, &callback 
+      def forever interval = 0, &callback 
         loop do
           begin
             rc = callback.call
