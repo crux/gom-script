@@ -8,6 +8,16 @@ describe Gom::Remote::Daemon do
     before :each do
       @daemon = Daemon.new 'http://gom:345/gom-script/test'
     end
+    it "should have a default actor_dt" do
+      @daemon.actor_dt.should == Daemon::Defaults[:actor_dt]
+    end
+    it "should have stealth mode off by default" do
+      @daemon.stealth.should == false
+    end
+    it "should have a default sensor_dt" do
+      @daemon.sensor_dt.should == Daemon::Defaults[:sensor_dt]
+    end
+
     it "should parse the service_path from the service_url" do
       @daemon.service_path.should == '/gom-script/test'
     end
@@ -21,6 +31,12 @@ describe Gom::Remote::Daemon do
     it "should terminate actor loop on :stop" do
       Gom::Remote.connection.should_receive(:refresh)
       timeout(1) { @daemon.actor_loop { :stop } }
+    end
+
+    it "should check in with its client ip" do
+      Gom::Remote.connection.should_receive(:write).
+        with("/gom-script/test:daemon_ip", "10.0.0.23")
+      @daemon.check_in
     end
   end
 

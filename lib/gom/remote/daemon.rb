@@ -9,20 +9,19 @@ module Gom
         :actor_dt       => 60,
         :sensor_dt      => 1,
         :callback_port  => 8815,
+        :stealth        => false,
       }
 
       include OAttr
-      oattr :actor_dt, :sensor_dt
+      oattr :actor_dt, :sensor_dt, :stealth
 
       # service_path is derived from the service_url (server part stripped)
       attr :service_path
 
       def initialize service_url, options = {}, &blk
         @options = (Defaults.merge options)
-
         callback_port = @options[:callback_port]
         @gom, @service_path = (Connection.init service_url, callback_port)
-
         (blk.call self, @service_path) unless blk.nil?
       end
 
@@ -62,6 +61,16 @@ module Gom
             break if rc == :stop
             sleep interval
           end
+        end
+      end
+
+      # push own ip and monitoring port back to GOM node
+      def check_in
+        if stealth
+          puts " -- no GOM check-in in stealth mode"
+        else
+          @gom.write "#{service_path}:daemon_ip", @gom.callback_server.host
+          #@gom.write "#{service_path}:nagios_port", nagios_port
         end
       end
     end
