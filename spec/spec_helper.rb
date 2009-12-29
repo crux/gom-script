@@ -27,7 +27,7 @@ require 'spec'
 require 'spec/autorun'
 require 'fakeweb'
 
-require 'gom/remote'
+require 'gom-script'
 
 Spec::Runner.configure do |config|
   config.before :each do

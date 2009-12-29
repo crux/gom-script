@@ -2,6 +2,10 @@ module Gom
   module Remote
     class Entry
       include Gom::Remote
+      def gom 
+        Gom::Remote.connection
+      end
+      # @deprecated?
       def connection 
         Gom::Remote.connection
       end

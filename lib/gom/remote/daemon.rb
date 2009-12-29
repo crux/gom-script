@@ -56,7 +56,7 @@ module Gom
           begin
             rc = callback.call
           rescue Exception => e
-            puts " ## #{self} - #{e}\n -> #{e.backtrace.join "\n    "}"
+            puts " ## <#{e.class}> #{self} - #{e}\n -> #{e.backtrace.join "\n    "}"
           ensure
             break if rc == :stop
             sleep interval
