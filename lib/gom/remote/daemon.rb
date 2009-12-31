@@ -51,6 +51,12 @@ module Gom
         end
       end
 
+      def background_loop intervall = 0, &callback
+        Thread.new do
+          forever intervall, &callback
+        end
+      end
+  
       def forever interval = 0, &callback 
         loop do
           begin
