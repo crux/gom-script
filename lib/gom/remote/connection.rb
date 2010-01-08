@@ -66,6 +66,20 @@ module Gom
         raise "not yet implemented"
       end
 
+      def destroy path
+        url = "#{@target_url}#{path}"
+        uri = URI.parse url
+        req = Net::HTTP::Delete.new uri.path
+
+        session = (Net::HTTP.new uri.host, uri.port)
+        case res = session.start { |http| http.request req }
+        when Net::HTTPSuccess, Net::HTTPRedirection
+          # OK
+        else
+          res.error!
+        end
+      end
+
       def read path
         url = "#{@target_url}#{path}"
         open(url).read

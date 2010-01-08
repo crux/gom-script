@@ -10,6 +10,29 @@ module Gom
         Gom::Remote.connection
       end
 
+=begin
+      def initialize
+        @path = nil
+        @attributes = {}
+        @children = {}
+      end
+
+      def new_record?
+        @path.nil?
+      end
+
+      def create path
+        @path.nil || raise ""
+      end
+
+      def save
+      end
+
+      def attributes
+        @attributes
+      end
+=end
+
       def gnode path
         json = (connection.read "#{path}.json")
         (JSON.parse json)["node"]["entries"].select do |entry|
