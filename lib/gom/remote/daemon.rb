@@ -79,6 +79,25 @@ module Gom
           #@gom.write "#{service_path}:nagios_port", nagios_port
         end
       end
+
+      def redirect_log filepath
+        (@logfile_fd && @logfile_fd.close) rescue nil
+        puts " -- redirecting stdout/stderr to: #{filepath}"
+        if filepath == '-'
+          # when @stdout is not defined/nil, we leave the file descriptors as
+          # they are 
+          if @stdout 
+            $stdout, $stderr = @stdout, @stderr
+          end
+        else
+          @stdout, @stderr = $stdout, $stderr
+          @logfile_fd = File.open(filepath, File::WRONLY|File::APPEND|File::CREAT)
+          @logfile_fd.sync = true
+          $stderr = $stdout = @logfile_fd
+        end
+        # first line after redirect
+        puts " -- e-meter daemon logile redirect at #{Time.now}"
+      end
     end
   end
 end
