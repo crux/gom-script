@@ -169,7 +169,7 @@ module Gom
       end
 
       def decode_gnp_body txt
-        debugger if (defined? debugger)
+        #debugger if (defined? debugger)
         json = (JSON.parse txt)
         puts " -- json GNP: #{json.inspect}"
 
