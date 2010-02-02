@@ -57,7 +57,7 @@ module Gom
         end
       end
   
-      def forever interval = 0, &callback 
+      def forever interval = 1, &callback 
         loop do
           begin
             rc = callback.call
