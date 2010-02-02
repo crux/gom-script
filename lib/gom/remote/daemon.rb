@@ -96,7 +96,7 @@ module Gom
           $stderr = $stdout = @logfile_fd
         end
         # first line after redirect
-        puts " -- e-meter daemon logile redirect at #{Time.now}"
+        puts " -- daemon logile redirect at #{Time.now}"
       end
     end
   end
