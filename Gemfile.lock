@@ -1,7 +1,12 @@
 PATH
   remote: .
   specs:
-    gom-script (0.2.0)
+    gom-script (0.2.1)
+      applix
+      gom-core
+      json
+      mongrel (>= 1.2.0.pre2)
+      rack
 
 GEM
   remote: http://rubygems.org/
@@ -22,7 +27,7 @@ GEM
     mongrel (1.2.0.pre2)
       daemons (~> 1.0.10)
       gem_plugin (~> 0.2.3)
-    rack (1.4.0)
+    rack (1.4.1)
     rbx-require-relative (0.0.5)
     rspec (2.8.0)
       rspec-core (~> 2.8.0)
@@ -53,13 +58,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  applix
   fakeweb (>= 1.2.7)
-  gom-core
   gom-script!
-  json
-  mongrel (>= 1.2.0.pre2)
-  rack
   rspec
   ruby-debug
   ruby-debug-base19

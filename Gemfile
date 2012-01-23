@@ -3,12 +3,6 @@ source :rubygems
 # Specify your gem's dependencies in gom-script.gemspec
 gemspec
 
-gem 'json'
-gem 'rack'
-gem 'mongrel', '>=1.2.0.pre2'
-gem 'applix'
-gem 'gom-core'
-
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

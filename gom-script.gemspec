@@ -15,6 +15,11 @@ Gem::Specification.new do |s|
     listen on state change event in the GOM.
   }
   #s.rubyforge_project = "gom-core"
+  s.add_dependency 'json'
+  s.add_dependency 'rack'
+  s.add_dependency 'mongrel', '>=1.2.0.pre2'
+  s.add_dependency 'applix' # for OAttr in http_server
+  s.add_dependency 'gom-core'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
