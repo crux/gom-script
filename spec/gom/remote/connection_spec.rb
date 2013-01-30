@@ -57,7 +57,7 @@ describe Gom::Remote::Connection do
     it "should subscribe operations whitelist" do
       s = (Gom::Remote::Subscription.new '/node', :operations => [:delete, :create])
       @gom.should_receive(:http_put).with(
-        "http://localhost:3000/gom/observer/node/.#{s.name}", 
+        "http://localhost:3000/gom/observer/node/.#{s.name}.xml",
         hash_including("attributes[operations]" => 'delete, create')
       )
       @gom.subscribe s
@@ -67,7 +67,7 @@ describe Gom::Remote::Connection do
     it "should have an uri regexp" do
       s = (Gom::Remote::Subscription.new '/node', :uri_regexp => /foo/)
       @gom.should_receive(:http_put).with(
-        "http://localhost:3000/gom/observer/node/.#{s.name}", 
+        "http://localhost:3000/gom/observer/node/.#{s.name}.xml",
         hash_including("attributes[uri_regexp]" => /foo/)
       )
       @gom.subscribe s
@@ -77,7 +77,7 @@ describe Gom::Remote::Connection do
     it "should have accept=application/json param" do
       s = (Gom::Remote::Subscription.new '/node')
       @gom.should_receive(:http_put).with(
-        "http://localhost:3000/gom/observer/node/.#{s.name}", 
+        "http://localhost:3000/gom/observer/node/.#{s.name}.xml",
         hash_including("attributes[accept]" => 'application/json')
       )
       @gom.subscribe s
@@ -87,7 +87,7 @@ describe Gom::Remote::Connection do
     it "should put observer to gom on refresh" do
       s = (Gom::Remote::Subscription.new '/node/values')
       @gom.should_receive(:http_put).with(
-        "http://localhost:3000/gom/observer/node/values/.#{s.name}", 
+        "http://localhost:3000/gom/observer/node/values/.#{s.name}.xml",
         #hash_including("attributes[callback_url]" => "http://1.2.3.4:2179/gnp;#{s.name};/node/values") 
         hash_including("attributes[callback_url]" => anything)
       )
@@ -98,7 +98,7 @@ describe Gom::Remote::Connection do
     it "should observe an attribute entry" do
       s = (Gom::Remote::Subscription.new '/node:attribute')
       @gom.should_receive(:http_put).with(
-        "http://localhost:3000/gom/observer/node/attribute/.#{s.name}", 
+        "http://localhost:3000/gom/observer/node/attribute/.#{s.name}.xml", 
         #hash_including("attributes[callback_url]" => "http://1.2.3.4:2179/gnp;#{s.name};/node:attribute") 
         hash_including("attributes[callback_url]" => anything)
       )
