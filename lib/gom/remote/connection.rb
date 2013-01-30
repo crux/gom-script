@@ -118,8 +118,8 @@ module Gom
             (v = sub.send key) and params["attributes[#{key}]"] = v
           end
 
-          url = "#{@target_url}#{sub.uri}"
-          http_put(url, params) # {|req| req.content_type = 'application/json'}
+          url = "#{@target_url}#{sub.uri}.xml"
+          http_put(url, params) # {|req| req.content_type = 'application/xml'}
         end
       end
 
